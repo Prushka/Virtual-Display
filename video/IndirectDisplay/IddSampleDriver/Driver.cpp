@@ -24,14 +24,19 @@ using namespace Microsoft::WRL;
 
 #pragma region SampleMonitors
 
-static constexpr DWORD IDD_SAMPLE_MONITOR_COUNT = 3; // If monitor count > ARRAYSIZE(s_SampleMonitors), we create edid-less monitors
+static constexpr DWORD IDD_SAMPLE_MONITOR_COUNT = 1; // If monitor count > ARRAYSIZE(s_SampleMonitors), we create edid-less monitors
 
 // Default modes reported for edid-less monitors. The first mode is set as preferred
 static const struct IndirectSampleMonitor::SampleMonitorMode s_SampleDefaultModes[] = 
 {
-    { 1920, 1080, 60 },
-    { 1600,  900, 60 },
-    { 1024,  768, 75 },
+    { 3840, 2160, 120 },
+    { 3024,  1890, 120 },
+    { 2732,  2048, 120 },
+    { 2560,  1600, 120 },
+    { 2560,  1440, 120 },
+    { 2500,  1250, 120 },
+    { 1920,  1080, 120 },
+    { 1920,  1080, 60 },
 };
 
 // FOR SAMPLE PURPOSES ONLY, Static info about monitors that will be reported to OS
@@ -49,27 +54,14 @@ static const struct IndirectSampleMonitor s_SampleMonitors[] =
             0x9B,0xFA,0xFA,0x40,0x01,0x0A,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x2C
         },
         {
-            { 2560, 1440, 144 },
-            { 1920, 1080,  60 },
-            { 1024,  768,  60 },
-        },
-        0
-    },
-    // Modified EDID from Lenovo Y27fA
-    {
-        {
-            0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x30,0xAE,0xBF,0x65,0x01,0x01,0x01,0x01,0x20,0x1A,0x01,
-            0x04,0xA5,0x3C,0x22,0x78,0x3B,0xEE,0xD1,0xA5,0x55,0x48,0x9B,0x26,0x12,0x50,0x54,0x00,0x08,0x00,
-            0xA9,0xC0,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x68,0xD8,0x00,
-            0x18,0xF1,0x70,0x2D,0x80,0x58,0x2C,0x45,0x00,0x53,0x50,0x21,0x00,0x00,0x1E,0x00,0x00,0x00,0x10,
-            0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFD,0x00,
-            0x30,0x92,0xB4,0xB4,0x22,0x01,0x0A,0x20,0x20,0x20,0x20,0x20,0x20,0x00,0x00,0x00,0xFC,0x00,0x4C,
-            0x45,0x4E,0x20,0x59,0x32,0x37,0x66,0x41,0x0A,0x20,0x20,0x20,0x00,0x11
-        },
-        {
-            { 3840, 2160,  60 },
-            { 1600,  900,  60 },
-            { 1024,  768,  60 },
+    { 3840, 2160, 120 },
+    { 3024,  1890, 120 },
+    { 2732,  2048, 120 },
+    { 2560,  1600, 120 },
+    { 2560,  1440, 120 },
+    { 2500,  1250, 120 },
+    { 1920,  1080, 120 },
+    { 1920,  1080, 60 },
         },
         0
     }
@@ -612,7 +604,7 @@ void IndirectMonitorContext::AssignSwapChain(IDDCX_SWAPCHAIN SwapChain, LUID Ren
 {
     m_ProcessingThread.reset();
 
-    auto Device = make_shared<Direct3DDevice>(RenderAdapter);
+	auto Device = make_shared<Direct3DDevice>(RenderAdapter);
     if (FAILED(Device->Init()))
     {
         // It's important to delete the swap-chain if D3D initialization fails, so that the OS knows to generate a new
@@ -769,11 +761,18 @@ NTSTATUS IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject, const IDARG_IN_
     // monitor's descriptor and instead are based on the static processing capability of the device. The OS will
     // report the available set of modes for a given output as the intersection of monitor modes with target modes.
 
+    TargetModes.push_back(CreateIddCxTargetMode(3840, 2160, 120));
     TargetModes.push_back(CreateIddCxTargetMode(3840, 2160, 60));
+    TargetModes.push_back(CreateIddCxTargetMode(3024, 1890, 120));
+    TargetModes.push_back(CreateIddCxTargetMode(2732, 2048, 120));
+    TargetModes.push_back(CreateIddCxTargetMode(2560, 1600, 120));
     TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 144));
+    TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 120));
     TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 90));
     TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 60));
+    TargetModes.push_back(CreateIddCxTargetMode(2500, 1250, 120));
     TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 144));
+    TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 120));
     TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 90));
     TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 60));
     TargetModes.push_back(CreateIddCxTargetMode(1600,  900, 60));
